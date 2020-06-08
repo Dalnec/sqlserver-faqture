@@ -1,0 +1,5 @@
+venv
+.vscode
+base/__pycache__/
+kulami/__pycache__/
+pseapi/__pycache__/
