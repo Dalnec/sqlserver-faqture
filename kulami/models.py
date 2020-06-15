@@ -17,6 +17,7 @@ class Venta:
     id_venta = None
     codigo_tipo_documento_identidad = None
     telefono = None
+    total_descuentos = None
     detalle_ventas = []
 
     def __str__(self):
@@ -48,7 +49,7 @@ def leer_db_access():
                 ,V.[UsuPer]  
                 ,V.[SubTot]
                 ,V.[IgvTot]
-                ,V.[TotVen]
+                ,V.[EfeVen]
                 ,V.[IdCli]
                 ,V.[TipDoc]
                 ,C.RucCli AS numero_doc
@@ -56,6 +57,7 @@ def leer_db_access():
                 ,C.DirCli AS direccion
                 ,C.TelCli AS telefono
                 ,V.[Obs]
+                ,V.[CorVen]
             FROM [Labbio].[dbo].[TBLVentas] AS V,
                     [Labbio].[dbo].[TBLCliente] AS C            
             WHERE V.IdCli = C.IdCli
@@ -94,6 +96,7 @@ def leer_db_access():
         venta.direccion_cliente = row[12] if row[12] != None else ''
         venta.telefono = row[13]        
         venta.total_bolsa_plastica = 0
+        venta.total_descuentos = row[15]
         
         detalle_ventas = []
         cursor.execute(sql_detail.format(venta.id_venta))
@@ -141,17 +144,17 @@ def _generate_lista(ventas):
 
         # totales
         datos_totales = {}
-        datos_totales['total_descuentos'] = 0
+        datos_totales['total_descuentos'] = round(float(venta.total_descuentos), 2)
         datos_totales['total_exportacion'] = 0
         datos_totales['total_operaciones_gravadas'] = 0
         datos_totales['total_operaciones_inafectas'] = 0
-        datos_totales['total_operaciones_exoneradas'] = int(venta.total_venta)
+        datos_totales['total_operaciones_exoneradas'] = round(float(venta.total_venta), 2)
         datos_totales['total_operaciones_gratuitas'] = 0
         #datos_totales['total_impuesto_bolsa_plastica'] = venta.total_bolsa_plastica
         datos_totales['total_igv'] = 0
         datos_totales['total_impuestos'] = 0
-        datos_totales['total_valor'] = int(venta.total_venta)
-        datos_totales['total_venta'] = int(venta.total_venta)
+        datos_totales['total_valor'] = round(float(venta.total_venta), 2)
+        datos_totales['total_venta'] = round(float(venta.total_venta), 2)
 
         header_dic['totales'] = datos_totales
 
@@ -161,7 +164,7 @@ def _generate_lista(ventas):
         datos_del_cliente['numero_documento'] = venta.numero_documento_cliente
         datos_del_cliente['apellidos_y_nombres_o_razon_social'] = venta.nombre_cliente
         datos_del_cliente['codigo_pais'] = 'PE'
-        datos_del_cliente['ubigeo'] = '210101'
+        datos_del_cliente['ubigeo'] = ''
         datos_del_cliente['direccion'] = venta.direccion_cliente
         datos_del_cliente['correo_electronico'] = ''
         datos_del_cliente['telefono'] = ''
